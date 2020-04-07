@@ -81,7 +81,7 @@ function viewTableData() {
             ID: `${res[i].id}`,
             Title: `${res[i].title}`,
             Salary: `${res[i].salary}`,
-            DeptID: `${res[i].department_id}`
+            DeptID: `${res[i].department_id}`,
           };
           roles.push(element);
         }
@@ -105,7 +105,7 @@ function viewTableData() {
             FirstName: `${res[i].first_name}`,
             LastName: `${res[i].last_name}`,
             RoleID: `${res[i].role_id}`,
-            ManagerID: `${res[i].manager_id}`
+            ManagerID: `${res[i].manager_id}`,
           };
           employees.push(element);
         }
@@ -126,7 +126,7 @@ function viewTableData() {
         for (let i = 0; i < res.length; i++) {
           let element = {
             ID: `${res[i].id}`,
-            Name: `${res[i].name}`
+            Name: `${res[i].name}`,
           };
           departments.push(element);
         }
@@ -139,7 +139,132 @@ function viewTableData() {
 }
 
 function addTableData() {
-  console.log("Proceeding to Add Table Data menu.");
+  inquirer
+    .prompt({
+      name: "add",
+      type: "list",
+      message: "Select a table to add data.",
+      choices: ["Role", "Employee", "Department", "Go Back"],
+    })
+    .then(function (answer) {
+      switch (answer.add) {
+        case "Role":
+          addRoleData();
+          break;
+        case "Employee":
+          addEmployeeData();
+          break;
+        case "Department":
+          addDepartmentData();
+          break;
+        case "Go Back":
+          runDatabase();
+        default:
+          throw new Error("Invalid selection.");
+      }
+    });
+
+  function addRoleData() {
+    inquirer
+    .prompt([
+      {
+        name: "roleTitle",
+        type: "input",
+        message: "Enter new title:"
+      },
+      {
+        name: "roleSalary",
+        type: "input",
+        message: "Enter salary:"
+      },
+      {
+        name: "roleDepartmentId",
+        type: "input",
+        message: "Enter Department Id:"
+      }
+    ])
+    .then(function(answer) {
+      connection.query(
+        "INSERT INTO role SET ?",
+        {
+          title: answer.roleTitle,
+          salary: answer.roleSalary,
+          department_id: answer.roleDepartmentId
+        },
+        function(err) {
+          if (err) throw err;
+          console.log("New role has been entered.");
+          runDatabase();
+        }
+      );
+    });
+  }
+
+  function addEmployeeData() {
+    inquirer
+    .prompt([
+      {
+        name: "employeeFirstName",
+        type: "input",
+        message: "Enter first name:"
+      },
+      {
+        name: "employeeLastName",
+        type: "input",
+        message: "Enter last name:"
+      },
+      {
+        name: "employeeRoleId",
+        type: "input",
+        message: "Enter Role Id:"
+      },
+      {
+        name: "employeeManagerId",
+        type: "input",
+        message: "Enter Manager Id:"
+      }
+    ])
+    .then(function(answer) {
+      connection.query(
+        "INSERT INTO employee SET ?",
+        {
+          first_name: answer.employeeFirstName,
+          last_name: answer.employeeLastName,
+          role_id: answer.employeeRoleId,
+          manager_id: answer.employeeManagerId
+        },
+        function(err) {
+          if (err) throw err;
+          console.log("New employee has been entered.");
+          runDatabase();
+        }
+      );
+    });
+  }
+
+  function addDepartmentData() {
+    inquirer
+    .prompt([
+      {
+        name: "departmentName",
+        type: "input",
+        message: "Enter department name:"
+      }
+    ])
+    .then(function(answer) {
+      connection.query(
+        "INSERT INTO department SET ?",
+        {
+          name: answer.departmentName
+        },
+        function(err) {
+          if (err) throw err;
+          console.log("New department has been entered.");
+          runDatabase();
+        }
+      );
+    });
+  }
 }
 
 function updateTableData() {
