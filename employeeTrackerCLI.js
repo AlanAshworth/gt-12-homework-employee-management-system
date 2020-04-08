@@ -1,8 +1,8 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
-const logo = require('asciiart-logo');
-const config = require('./package.json');
+const logo = require("asciiart-logo");
+const config = require("./package.json");
 console.log(logo(config).render());
 
 var connection = mysql.createConnection({
@@ -40,8 +40,6 @@ function runDatabase() {
         case "Quit":
           quit();
           break;
-        default:
-          throw new Error("Invalid selection.");
       }
     });
 }
@@ -68,8 +66,6 @@ function viewTableData() {
         case "Go Back":
           runDatabase();
           break;
-        default:
-          throw new Error("Invalid selection.");
       }
     });
 
@@ -163,8 +159,6 @@ function addTableData() {
           break;
         case "Go Back":
           runDatabase();
-        default:
-          throw new Error("Invalid selection.");
       }
     });
 
@@ -293,8 +287,6 @@ function updateTableData() {
         case "Go Back":
           runDatabase();
           break;
-        default:
-          throw new Error("Invalid selection.");
       }
     });
 
@@ -345,14 +337,15 @@ function updateTableData() {
               chosenItem = data[i];
             }
           }
+          console.log(chosenItem.id);
           connection.query(
             "UPDATE employee SET ? WHERE ?",
             [
               {
                 first_name: answer.newEmployeeFirstName,
                 last_name: answer.newEmployeeLastName,
-                role_id: parseInt(answer.newEmployeeRoleID),
-                manager_id: parseInt(answer.newEmployeeManagerID),
+                role_id: answer.newEmployeeRoleID,
+                manager_id: answer.newEmployeeManagerID,
               },
               {
                 id: chosenItem.id,
