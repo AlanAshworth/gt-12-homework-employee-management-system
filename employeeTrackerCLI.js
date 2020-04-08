@@ -64,6 +64,7 @@ function viewTableData() {
           break;
         case "Go Back":
           runDatabase();
+          break;
         default:
           throw new Error("Invalid selection.");
       }
@@ -166,109 +167,253 @@ function addTableData() {
 
   function addRoleData() {
     inquirer
-    .prompt([
-      {
-        name: "roleTitle",
-        type: "input",
-        message: "Enter new title:"
-      },
-      {
-        name: "roleSalary",
-        type: "input",
-        message: "Enter salary:"
-      },
-      {
-        name: "roleDepartmentId",
-        type: "input",
-        message: "Enter Department Id:"
-      }
-    ])
-    .then(function(answer) {
-      connection.query(
-        "INSERT INTO role SET ?",
+      .prompt([
         {
-          title: answer.roleTitle,
-          salary: answer.roleSalary,
-          department_id: answer.roleDepartmentId
+          name: "roleTitle",
+          type: "input",
+          message: "Enter Title:",
         },
-        function(err) {
-          if (err) throw err;
-          console.log("New role has been entered.");
-          runDatabase();
-        }
-      );
-    });
+        {
+          name: "roleSalary",
+          type: "input",
+          message: "Enter Salary:",
+        },
+        {
+          name: "roleDepartmentId",
+          type: "input",
+          message: "Enter Department ID:",
+        },
+      ])
+      .then(function (answer) {
+        connection.query(
+          "INSERT INTO role SET ?",
+          {
+            title: answer.roleTitle,
+            salary: answer.roleSalary,
+            department_id: answer.roleDepartmentId,
+          },
+          function (err) {
+            if (err) throw err;
+            console.log("New role has been entered.");
+            runDatabase();
+          }
+        );
+      });
   }
 
   function addEmployeeData() {
     inquirer
-    .prompt([
-      {
-        name: "employeeFirstName",
-        type: "input",
-        message: "Enter first name:"
-      },
-      {
-        name: "employeeLastName",
-        type: "input",
-        message: "Enter last name:"
-      },
-      {
-        name: "employeeRoleId",
-        type: "input",
-        message: "Enter Role Id:"
-      },
-      {
-        name: "employeeManagerId",
-        type: "input",
-        message: "Enter Manager Id:"
-      }
-    ])
-    .then(function(answer) {
-      connection.query(
-        "INSERT INTO employee SET ?",
+      .prompt([
         {
-          first_name: answer.employeeFirstName,
-          last_name: answer.employeeLastName,
-          role_id: answer.employeeRoleId,
-          manager_id: answer.employeeManagerId
+          name: "employeeFirstName",
+          type: "input",
+          message: "Enter first name:",
         },
-        function(err) {
-          if (err) throw err;
-          console.log("New employee has been entered.");
-          runDatabase();
-        }
-      );
-    });
+        {
+          name: "employeeLastName",
+          type: "input",
+          message: "Enter last name:",
+        },
+        {
+          name: "employeeRoleId",
+          type: "input",
+          message: "Enter Role ID:",
+        },
+        {
+          name: "employeeManagerId",
+          type: "input",
+          message: "Enter Manager ID:",
+        },
+      ])
+      .then(function (answer) {
+        connection.query(
+          "INSERT INTO employee SET ?",
+          {
+            first_name: answer.employeeFirstName,
+            last_name: answer.employeeLastName,
+            role_id: answer.employeeRoleId,
+            manager_id: answer.employeeManagerId,
+          },
+          function (err) {
+            if (err) throw err;
+            console.log("New employee has been entered.");
+            runDatabase();
+          }
+        );
+      });
   }
 
   function addDepartmentData() {
     inquirer
-    .prompt([
-      {
-        name: "departmentName",
-        type: "input",
-        message: "Enter department name:"
-      }
-    ])
-    .then(function(answer) {
-      connection.query(
-        "INSERT INTO department SET ?",
+      .prompt([
         {
-          name: answer.departmentName
+          name: "departmentName",
+          type: "input",
+          message: "Enter department name:",
         },
-        function(err) {
-          if (err) throw err;
-          console.log("New department has been entered.");
-          runDatabase();
-        }
-      );
-    });
+      ])
+      .then(function (answer) {
+        connection.query(
+          "INSERT INTO department SET ?",
+          {
+            name: answer.departmentName,
+          },
+          function (err) {
+            if (err) throw err;
+            console.log("New department has been entered.");
+            runDatabase();
+          }
+        );
+      });
   }
 }
 
 function updateTableData() {
-  console.log("Proceeding to Update Table Data menu.");
+  inquirer
+    .prompt({
+      name: "update",
+      type: "list",
+      message: "Select a table to update data.",
+      choices: ["Department", "Go Back"],
+    })
+    .then(function (answer) {
+      switch (answer.update) {
+        case "Role":
+          updateRoleData();
+          break;
+        case "Employee":
+          updateEmployeeData();
+          break;
+        case "Department":
+          updateDepartmentData();
+          break;
+        case "Go Back":
+          runDatabase();
+          break;
+        default:
+          throw new Error("Invalid selection.");
+      }
+    });
+
+  function updateEmployeeData() {
+    connection.query("SELECT * FROM employee", function (err, data) {
+      if (err) throw err;
+      inquirer
+        .prompt([
+          {
+            name: "employee",
+            type: "list",
+            message: "Select Employee to update.",
+            choices: function () {
+              let choiceArray = [];
+              for (let i = 0; i < data.length; i++) {
+                choiceArray.push(
+                  `${data[i].id}: ${data[i].first_name} ${data[i].last_name}`
+                );
+              }
+              return choiceArray;
+            },
+          },
+          {
+            name: "newEmployeeFirstName",
+            type: "input",
+            message: "Edit Employee first name:",
+          },
+          {
+            name: "newEmployeeLastName",
+            type: "input",
+            message: "Edit Employee last name:",
+          },
+          {
+            name: "newEmployeeRoleID",
+            type: "input",
+            message: "Edit Employee Role ID:",
+          },
+          {
+            name: "newEmployeeManagerID",
+            type: "input",
+            message: "Edit Employee Manager ID:",
+          },
+        ])
+        .then(function (answer) {
+          var chosenItem;
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].id === answer.employee) {
+              chosenItem = data[i];
+            }
+          }
+          connection.query(
+            "UPDATE employee SET ? WHERE ?",
+            [
+              {
+                first_name: answer.newEmployeeFirstName,
+                last_name: answer.newEmployeeLastName,
+                role_id: parseInt(answer.newEmployeeRoleID),
+                manager_id: parseInt(answer.newEmployeeManagerID),
+              },
+              {
+                id: chosenItem.id,
+              },
+            ],
+            function (err) {
+              if (err) throw err;
+              console.log("Employee has been updated.");
+              runDatabase();
+            }
+          );
+        });
+    });
+  }
+
+  function updateDepartmentData() {
+    connection.query("SELECT * FROM department", function (err, data) {
+      if (err) throw err;
+      inquirer
+        .prompt([
+          {
+            name: "department",
+            type: "list",
+            message: "Select Department to update.",
+            choices: function () {
+              let choiceArray = [];
+              for (let i = 0; i < data.length; i++) {
+                choiceArray.push(data[i].name);
+              }
+              return choiceArray;
+            },
+          },
+          {
+            name: "newDepartment",
+            type: "input",
+            message: "Edit Department:",
+          },
+        ])
+        .then(function (answer) {
+          var chosenItem;
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].name === answer.department) {
+              chosenItem = data[i];
+            }
+          }
+          connection.query(
+            "UPDATE department SET ? WHERE ?",
+            [
+              {
+                name: answer.newDepartment,
+              },
+              {
+                id: chosenItem.id,
+              },
+            ],
+            function (err) {
+              if (err) throw err;
+              console.log("Department has been updated.");
+              runDatabase();
+            }
+          );
+        });
+    });
+  }
 }
 
 function quit() {
