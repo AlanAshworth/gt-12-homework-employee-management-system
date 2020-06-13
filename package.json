@@ -2,17 +2,17 @@
   "name": "employee-tracker",
   "version": "1.0.0",
   "description": "A Node CLI allowing users to view, add, and edit an employee database.",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node employeeTrackerCLI.js"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AlanAshworth/GT-Homework-12-Employee-Tracker.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "alan ashworth",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/AlanAshworth/GT-Homework-12-Employee-Tracker/issues"
@@ -20,8 +20,10 @@
   "homepage": "https://github.com/AlanAshworth/GT-Homework-12-Employee-Tracker#readme",
   "dependencies": {
     "asciiart-logo": "^0.2.6",
+    "chalk": "^4.0.0",
     "console.table": "^0.10.0",
+    "dotenv": "^8.2.0",
     "inquirer": "^7.1.0",
-    "mysql": "^2.18.1"
+    "mssql": "^6.2.0"
   }
 }
